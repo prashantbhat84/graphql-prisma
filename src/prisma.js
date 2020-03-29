@@ -6,60 +6,67 @@ const prisma = new Prisma({
 });
 //prisma.qery  prisma,mutation prisma.sub  prisma.exists
 
-// prisma.query.users(null, "{id name posts {id title}}").then(data => {
-//   console.log(JSON.stringify(data, undefined, 2));
-// });
-// prisma.query
-//   .comments(null, "{id text author{id name} post{ id title}}")
-//   .then(data => {
-//     console.log(JSON.stringify(data, undefined, 4));
-//   });
-// prisma.mutation
-//   .createPost(
-//     {
-//       data: {
-//         title: "101 graphql",
-//         body: "",
-//         published: false,
-//         author: {
-//           connect: {
-//             id: "ck8btkasj00fg070383qxke4v"
-//           }
-//         }
-//       }
-//     },
-//     "{id title body published}"
-//   )
-//   .then(data => {
-//     console.log(JSON.stringify(data, undefined, 2));
-//     return prisma.query.users(null, "{id name posts {id title}}").then(data => {
-//       console.log(JSON.stringify(data, undefined, 2));
-//     });
-//   });
-// prisma.query
-//   .posts(null, "{id title body published author {id name email}}")
-//   .then(data => {
-//     console.log(JSON.stringify(data, undefined, 4));
-//     console.log(data.length);
-//   });
-prisma.mutation
-  .updatePost(
+const createPostForUser = async (authorid, data) => {
+  const post = await prisma.mutation.createPost(
     {
-      where: {
-        id: "ck8cs28wu003i070337n662qb"
-      },
       data: {
-        body: "This is a new course",
-        published: true
+        ...data,
+
+        author: {
+          connect: {
+            id: authorid
+          }
+        }
       }
     },
-    "{id title body published}"
-  )
-  .then(data => {
-    console.log(data);
-    prisma.query
-      .posts(null, "{id title body published author{ id name email}}")
-      .then(data => {
-        console.log(JSON.stringify(data, undefined, 4));
-      });
-  });
+    "{id }"
+  );
+  const user = await prisma.query.user(
+    {
+      where: {
+        id: authorid
+      }
+    },
+    "{name email posts{id title published}}"
+  );
+
+  return user;
+};
+// createPostForUser("ck8bu15j000id0703776wfjq3", {
+//   title: "My third post",
+//   body: "My  post body",
+//   published: true
+// }).then(user => {
+//   console.log(JSON.stringify(user, undefined, 2));
+// });
+
+const updateUserPost = async (postid, data) => {
+  const updatePost = await prisma.mutation.updatePost(
+    {
+      where: {
+        id: postid
+      },
+      data: {
+        ...data
+      }
+    },
+    "{id author{id} }"
+  );
+  console.log(updatePost.author.id);
+  const user = await prisma.query.user(
+    {
+      where: {
+        id: updatePost.author.id
+      }
+    },
+    "{id name email posts {id title  body published}}"
+  );
+
+  return user;
+};
+// updateUserPost("ck8bv0ap400pa0703wdm4barl", {
+//   body: "Updated new post1",
+//   published: false
+// }).then(post => {
+//   console.log(JSON.stringify(post, undefined, 2));
+// });
