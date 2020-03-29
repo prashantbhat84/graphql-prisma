@@ -1,0 +1,23 @@
+# SET_NULL(default)  - CASCADE
+# used when one table rec is deleted and   that rec has aprimary key in other tables
+# for set null the return type has to be nullable. incase of non-nullabel cascade has to be used
+type User {
+  id: ID! @id
+  userid: String! @unique
+  reviews: [Reviews!]! @relation(name: "ReviewToUser", onDelete: CASCADE)
+}
+
+type Book {
+  id: ID! @id
+  title: String!
+  isbn: String!
+  author: String!
+  reviews: [Reviews!]! @relation(name: "ReviewToBook", onDelete: CASCADE)
+}
+type Reviews {
+  id: ID! @id
+  text: String!
+  rating: Int!
+  book: Book! @relation(name: "ReviewToBook", onDelete: SET_NULL)
+  author: User! @relation(name: "ReviewToUser", onDelete: SET_NULL)
+}
