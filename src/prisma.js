@@ -7,6 +7,10 @@ const prisma = new Prisma({
 //prisma.qery  prisma,mutation prisma.sub  prisma.exists
 
 const createPostForUser = async (authorid, data) => {
+  const verify = await prisma.exists.User({ id: authorid });
+  if (!verify) {
+    throw new Error("No User is found ");
+  }
   const post = await prisma.mutation.createPost(
     {
       data: {
@@ -19,28 +23,28 @@ const createPostForUser = async (authorid, data) => {
         }
       }
     },
-    "{id }"
-  );
-  const user = await prisma.query.user(
-    {
-      where: {
-        id: authorid
-      }
-    },
-    "{name email posts{id title published}}"
+    "{author{  id name email posts{id title published}} }"
   );
 
-  return user;
+  return post;
 };
-// createPostForUser("ck8bu15j000id0703776wfjq3", {
-//   title: "My third post",
-//   body: "My  post body",
+// createPostForUser("ck8btkasj00fg070383qxke4v", {
+//   title: "My New Post",
+//   body: "My   body",
 //   published: true
-// }).then(user => {
-//   console.log(JSON.stringify(user, undefined, 2));
-// });
+// })
+//   .then(user => {
+//     console.log(JSON.stringify(user, undefined, 2));
+//   })
+//   .catch(e => {
+//     console.log(e.message);
+//   });
 
 const updateUserPost = async (postid, data) => {
+  const verifyPost = await prisma.exists.Post({ id: postid });
+  if (!verifyPost) {
+    throw new Error("Post does not exist");
+  }
   const updatePost = await prisma.mutation.updatePost(
     {
       where: {
@@ -50,23 +54,19 @@ const updateUserPost = async (postid, data) => {
         ...data
       }
     },
-    "{id author{id} }"
+    "{author { id name email}  }"
   );
   console.log(updatePost.author.id);
-  const user = await prisma.query.user(
-    {
-      where: {
-        id: updatePost.author.id
-      }
-    },
-    "{id name email posts {id title  body published}}"
-  );
 
-  return user;
+  return updatePost.author;
 };
-// updateUserPost("ck8bv0ap400pa0703wdm4barl", {
-//   body: "Updated new post1",
-//   published: false
-// }).then(post => {
-//   console.log(JSON.stringify(post, undefined, 2));
-// });
+// updateUserPost("ck8crsktr00320703bc4zufh8", {
+//   body: "New Graphql Post3",
+//   published: true
+// })
+//   .then(post => {
+//     console.log(JSON.stringify(post, undefined, 2));
+//   })
+//   .catch(e => {
+//     console.log(e.message);
+//   });
