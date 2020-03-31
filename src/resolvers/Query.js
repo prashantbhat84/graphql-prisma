@@ -14,26 +14,28 @@ const Query = {
       published: false
     };
   },
-  users(parent, args, { db }, info) {
-    if (!args.query) {
-      return db.users;
-    }
-    return db.users.filter(user => {
-      return user.name.toLowerCase().includes(args.query.toLowerCase());
-    });
+  users(parent, args, { prisma }, info) {
+    // if (!args.query) {
+    //   return db.users;
+    // }
+    // return db.users.filter(user => {
+    //   return user.name.toLowerCase().includes(args.query.toLowerCase());
+    // });
+    return prisma.query.users(null, info);
   },
-  posts(parent, args, ctx, info) {
-    const { posts } = ctx.db;
-    if (!args.search) {
-      return posts;
-    }
+  posts(parent, args, { prisma }, info) {
+    // const { posts } = ctx.db;
+    // if (!args.search) {
+    //   return posts;
+    // }
 
-    return posts.filter(post => {
-      return (
-        post.body.toLowerCase().includes(args.search.toLowerCase()) ||
-        post.title.toLowerCase().includes(args.search.toLowerCase())
-      );
-    });
+    // return posts.filter(post => {
+    //   return (
+    //     post.body.toLowerCase().includes(args.search.toLowerCase()) ||
+    //     post.title.toLowerCase().includes(args.search.toLowerCase())
+    //   );
+    // });
+    return prisma.query.posts(null, info);
   },
   comments(parent, args, ctx, info) {
     return ctx.db.comments;
