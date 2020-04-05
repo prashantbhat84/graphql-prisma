@@ -26,9 +26,9 @@ const Query = {
   },
   posts(parent, args, { prisma }, info) {
     const opArgsPost = {};
-    if (args.search) {
+    if (args.query) {
       opArgsPost.where = {
-        OR: [{ title_contains: args.search }, { body_contains: args.search }],
+        OR: [{ title_contains: args.query }, { body_contains: args.query }],
       };
     }
     return prisma.query.posts(opArgsPost, info);
