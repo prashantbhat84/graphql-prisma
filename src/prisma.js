@@ -2,7 +2,8 @@ import { Prisma } from "prisma-binding";
 
 const prisma = new Prisma({
   typeDefs: "src/generated/prisma.graphql",
-  endpoint: "http://localhost:4466"
+  endpoint: "http://localhost:4466",
+  secret: "AndrewMeadPrashantUdemy@1234567890",
 });
 export { prisma as default };
 //prisma.qery  prisma,mutation prisma.sub  prisma.exists
